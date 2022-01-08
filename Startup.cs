@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SpotifyStats.Facades;
+using SpotifyStats.Interfaces;
+using SpotifyStats.Models;
 
 namespace SpotifyStats
 {
@@ -25,7 +28,11 @@ namespace SpotifyStats
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var apiSettings = Configuration.GetSection("ApiSettings");
+
             services.AddControllers();
+            services.AddScoped<IAuthorization, Authorization>();
+            services.Configure<ApiSettings>(apiSettings);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
