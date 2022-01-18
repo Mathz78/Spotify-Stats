@@ -27,5 +27,12 @@ namespace SpotifyStats.Controllers
 
             return Redirect(url);
         }
+
+        [HttpGet]
+        [Route("/callback")]
+        public void Callback([FromQuery(Name = "code")] string code, [FromQuery(Name = "state")] string state)
+        {
+            var result = _authorization.Callback(code, state);
+        }
     }
 }

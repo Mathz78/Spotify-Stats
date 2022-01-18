@@ -4,5 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="RestEase" Version="1.5.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\TryingObject.cs" />
+  </ItemGroup>
+
 
 </Project>
