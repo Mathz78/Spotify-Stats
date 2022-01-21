@@ -12,6 +12,6 @@ namespace SpotifyStats.Interfaces
         AuthenticationHeaderValue Authorization { get; set; }
         
         [Post("api/token")]
-        Task<object> GetUserAsync([Body(BodySerializationMethod.UrlEncoded)] IDictionary<string, string> data);
+        Task<SpotifyTokensResponse> GetUserAsync([Body(BodySerializationMethod.UrlEncoded)] IDictionary<string, string> data);
     }
 }

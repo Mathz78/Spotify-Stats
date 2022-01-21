@@ -1,5 +1,4 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace SpotifyStats.Interfaces
 {
@@ -7,6 +6,6 @@ namespace SpotifyStats.Interfaces
     {
         public string Login();
 
-        public string Callback(string code, string state);
+        public void Callback(string code, string state, HttpContext context);
     }
 }

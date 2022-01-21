@@ -1,12 +1,15 @@
 using System;
+
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using RestEase;
 using SpotifyStats.Interfaces;
 using SpotifyStats.Models;
+
 
 namespace SpotifyStats.Facades
 {
@@ -21,6 +24,7 @@ namespace SpotifyStats.Facades
         private const string REDIRECT_URI = "redirect_uri";
         private const string STATE = "state";
         private const string RESPONSE_TYPE_VALUE = "code";
+        private const string SPOTIFY_ACCESS_TOKEN_COOKIE_NAME = "SpotifyAccessToken";
 
         private string _clientSecretValue;
         private string _clientIdValue;
@@ -47,7 +51,7 @@ namespace SpotifyStats.Facades
             return url;
         }
         
-        public string Callback(string code,  string state)
+        public void Callback(string code,  string state, HttpContext context)
         {
             var api = RestClient.For<ISpotifyClient>("https://accounts.spotify.com");
 
@@ -60,9 +64,9 @@ namespace SpotifyStats.Facades
             var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_clientIdValue}:{_clientSecretValue}"));
             api.Authorization = new AuthenticationHeaderValue("Basic", authorization);
             
-            var user = api.GetUserAsync(authOptions).Result;
+            var clientTokens = api.GetUserAsync(authOptions).Result;
 
-            return user.ToString();
+            createCookie(context, clientTokens.AccessToken, clientTokens.Expiration);
         }
 
         private string buildUrl(string baseUrl, string clientIdValue, string scopeValue, string redirectUriValue, string stateValue)
@@ -93,5 +97,13 @@ namespace SpotifyStats.Facades
             
             return randomString;
         }
-    }
+        
+        private void createCookie(HttpContext context, string accessToken, int expirationTime)
+        {
+            CookieOptions cookies = new CookieOptions();
+
+            cookies.Expires = DateTimeOffset.Now.AddSeconds(expirationTime);
+            context.Response.Cookies.Append(SPOTIFY_ACCESS_TOKEN_COOKIE_NAME, accessToken, cookies);
+        }
+    }   
 }

@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using SpotifyStats.Interfaces;
 
 namespace SpotifyStats.Controllers
@@ -24,7 +20,7 @@ namespace SpotifyStats.Controllers
         public RedirectResult Login()
         {
             var url = _authorization.Login();
-
+            
             return Redirect(url);
         }
 
@@ -32,7 +28,7 @@ namespace SpotifyStats.Controllers
         [Route("/callback")]
         public void Callback([FromQuery(Name = "code")] string code, [FromQuery(Name = "state")] string state)
         {
-            var result = _authorization.Callback(code, state);
+            _authorization.Callback(code, state, HttpContext);
         }
     }
 }
