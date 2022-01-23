@@ -22,7 +22,7 @@ namespace SpotifyStats.Facades
             api.Authorization = new AuthenticationHeaderValue("Bearer", _userData.VerifyExistingToken(context));
 
             var userInfo = api.GetUserInfoAsync().Result;
-            var userPlaylists = api.GetUserPlaylists().Result;
+            var userPlaylists = api.GetUserPlaylistsAsync().Result;
 
             return new object();
         }
