@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using SpotifyStats.Facades;
 using SpotifyStats.Interfaces;
 using SpotifyStats.Models;
+using SpotifyStats.Services;
 
 namespace SpotifyStats
 {
@@ -32,6 +33,8 @@ namespace SpotifyStats
 
             services.AddControllers();
             services.AddScoped<IAuthorization, Authorization>();
+            services.AddScoped<IUserData, UserData>();
+            services.AddScoped<IPlaylist, Playlist>();
             services.Configure<ApiSettings>(apiSettings);
         }
 

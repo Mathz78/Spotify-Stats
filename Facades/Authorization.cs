@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using RestEase;
 using SpotifyStats.Interfaces;
+using SpotifyStats.Interfaces.RestEase;
 using SpotifyStats.Models;
 
 
@@ -17,6 +18,7 @@ namespace SpotifyStats.Facades
     {
         private ApiSettings _apiSettings;
         private ISpotifyClient _spotifyClient;
+        private IUserData _userData;
 
         private const string RESPONSE_TYPE = "response_type";
         private const string CLIENT_ID = "client_id";
@@ -24,7 +26,6 @@ namespace SpotifyStats.Facades
         private const string REDIRECT_URI = "redirect_uri";
         private const string STATE = "state";
         private const string RESPONSE_TYPE_VALUE = "code";
-        private const string SPOTIFY_ACCESS_TOKEN_COOKIE_NAME = "SpotifyAccessToken";
 
         private string _clientSecretValue;
         private string _clientIdValue;
@@ -32,7 +33,7 @@ namespace SpotifyStats.Facades
         private string _baseUrl;
         private string _scope;
 
-        public Authorization(IOptions<ApiSettings> apiSettings)
+        public Authorization(IOptions<ApiSettings> apiSettings, IUserData userData)
         {
             _apiSettings = apiSettings.Value;
 
@@ -41,17 +42,19 @@ namespace SpotifyStats.Facades
             _redirectUriValue = _apiSettings.RedirectUri;
             _baseUrl = _apiSettings.BaseSpotifyUrl;
             _scope = _apiSettings.SpotifyScope;
+
+            _userData = userData;
         }
 
         public string Login()
         {
             var state = generateRandomString();
             var url = buildUrl(_baseUrl, _clientIdValue, _scope, _redirectUriValue, state);
-
+            
             return url;
         }
         
-        public void Callback(string code,  string state, HttpContext context)
+        public void Callback(string code, string state, HttpContext context)
         {
             var api = RestClient.For<ISpotifyClient>("https://accounts.spotify.com");
 
@@ -66,7 +69,7 @@ namespace SpotifyStats.Facades
             
             var clientTokens = api.GetUserAsync(authOptions).Result;
 
-            createCookie(context, clientTokens.AccessToken, clientTokens.Expiration);
+            _userData.CreateTokensCookie(context, clientTokens.AccessToken, clientTokens.Expiration);
         }
 
         private string buildUrl(string baseUrl, string clientIdValue, string scopeValue, string redirectUriValue, string stateValue)
@@ -96,14 +99,6 @@ namespace SpotifyStats.Facades
             }
             
             return randomString;
-        }
-        
-        private void createCookie(HttpContext context, string accessToken, int expirationTime)
-        {
-            CookieOptions cookies = new CookieOptions();
-
-            cookies.Expires = DateTimeOffset.Now.AddSeconds(expirationTime);
-            context.Response.Cookies.Append(SPOTIFY_ACCESS_TOKEN_COOKIE_NAME, accessToken, cookies);
         }
     }   
 }

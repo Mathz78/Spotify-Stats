@@ -3,8 +3,9 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using RestEase;
 using SpotifyStats.Models;
+using SpotifyStats.Models.Responses;
 
-namespace SpotifyStats.Interfaces
+namespace SpotifyStats.Interfaces.RestEase
 {
     public interface ISpotifyClient
     {

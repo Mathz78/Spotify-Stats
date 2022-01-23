@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace SpotifyStats.Models
+namespace SpotifyStats.Models.Responses
 {
     public class SpotifyTokensResponse
     {
