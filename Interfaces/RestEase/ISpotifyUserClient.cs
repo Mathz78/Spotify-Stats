@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace SpotifyStats.Interfaces.RestEase
         [Get("v1/me/playlists?limit=50")]
         Task<PlaylistsResponse> GetUserPlaylistsAsync();
 
-        [Get("v1/playlists/{playlistId}/tracks?{offset}")]
-        Task<object> GetPlaylistTracksAsync([Path] string playlistId, [Path] string offset);
+        [Get("v1/playlists/{playlistId}/tracks?offset={offset}")]
+        Task<PlaylistTracks> GetPlaylistTracksAsync([Path] string playlistId, [Path] string offset);
     }
 }

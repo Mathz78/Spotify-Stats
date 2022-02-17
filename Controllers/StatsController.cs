@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using SpotifyStats.Interfaces;
 
@@ -15,9 +16,16 @@ namespace SpotifyStats.Controllers
         }
 
         [HttpGet]
-        public void GetAllPlaylists()
+        public IActionResult GetAllPlaylists()
         {
-            _playlist.GetAllPlaylists(HttpContext);
+            return Ok(_playlist.GetAllPlaylists(HttpContext));
+        }
+
+        [HttpGet]
+        [Route("playlist/tracks")]
+        public IActionResult GetPlaylistTracks([FromQuery(Name = "id")] string playlistId)
+        {
+            return Ok(_playlist.GetPlaylistTracks(HttpContext, playlistId));
         }
     }
 }
