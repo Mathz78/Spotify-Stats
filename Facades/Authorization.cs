@@ -5,8 +5,6 @@ using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using RestEase;
 using SpotifyStats.Interfaces;
 using SpotifyStats.Interfaces.RestEase;
 using SpotifyStats.Models;
@@ -16,9 +14,9 @@ namespace SpotifyStats.Facades
 {
     public class Authorization : IAuthorization
     {
-        private ApiSettings _apiSettings;
-        private ISpotifyClient _spotifyClient;
-        private IUserData _userData;
+        private readonly ApiSettings _apiSettings;
+        private readonly ISpotifyClient _spotifyClient;
+        private readonly IUserData _userData;
 
         private const string RESPONSE_TYPE = "response_type";
         private const string CLIENT_ID = "client_id";
@@ -27,16 +25,17 @@ namespace SpotifyStats.Facades
         private const string STATE = "state";
         private const string RESPONSE_TYPE_VALUE = "code";
 
-        private string _clientSecretValue;
-        private string _clientIdValue;
-        private string _redirectUriValue;
-        private string _baseUrl;
-        private string _scope;
+        private readonly string _clientSecretValue;
+        private readonly string _clientIdValue;
+        private readonly string _redirectUriValue;
+        private readonly string _baseUrl;
+        private readonly string _scope;
 
-        public Authorization(IOptions<ApiSettings> apiSettings, IUserData userData)
+        public Authorization(ApiSettings apiSettings, IUserData userData, ISpotifyClient spotifyClient)
         {
-            _apiSettings = apiSettings.Value;
-
+            _apiSettings = apiSettings;
+            _spotifyClient = spotifyClient;
+            
             _clientSecretValue = _apiSettings.ClientSecret;
             _clientIdValue = _apiSettings.ClientId;
             _redirectUriValue = _apiSettings.RedirectUri;
@@ -56,8 +55,6 @@ namespace SpotifyStats.Facades
         
         public void Callback(string code, string state, HttpContext context)
         {
-            var api = RestClient.For<ISpotifyClient>("https://accounts.spotify.com");
-
             var authOptions = new Dictionary<string, string> {
                 {"code", code},
                 {"redirect_uri", _redirectUriValue},
@@ -65,9 +62,9 @@ namespace SpotifyStats.Facades
             };
 
             var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_clientIdValue}:{_clientSecretValue}"));
-            api.Authorization = new AuthenticationHeaderValue("Basic", authorization);
+            _spotifyClient.Authorization = new AuthenticationHeaderValue("Basic", authorization);
             
-            var clientTokens = api.GetUserAsync(authOptions).Result;
+            var clientTokens = _spotifyClient.GetUserAsync(authOptions).Result;
 
             _userData.CreateTokensCookie(context, clientTokens.AccessToken, clientTokens.Expiration);
         }

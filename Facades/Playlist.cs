@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Web;
 using Microsoft.AspNetCore.Http;
-using RestEase;
 using SpotifyStats.Interfaces;
 using SpotifyStats.Interfaces.RestEase;
 using SpotifyStats.Models.Responses;
@@ -16,19 +15,20 @@ namespace SpotifyStats.Facades
         private const string OFFSET = "offset";
 
         private readonly IUserData _userData;
+        private readonly ISpotiyfUserClient _spotiyfUserClient;
 
-        public Playlist(IUserData userData)
+        public Playlist(IUserData userData, ISpotiyfUserClient spotiyfUserClient)
         {
             _userData = userData;
+            _spotiyfUserClient = spotiyfUserClient;
         }
 
         public PlaylistsResponse GetAllPlaylists(HttpContext context)
         {
-            var api = RestClient.For<ISpotiyfUserClient>("https://api.spotify.com");
-            api.Authorization = new AuthenticationHeaderValue("Bearer", _userData.VerifyExistingToken(context));
+            _spotiyfUserClient.Authorization = new AuthenticationHeaderValue("Bearer", _userData.VerifyExistingToken(context));
 
-            var userInfo = api.GetUserInfoAsync().Result;
-            var userPlaylists = api.GetUserPlaylistsAsync().Result;
+            var userInfo = _spotiyfUserClient.GetUserInfoAsync().Result;
+            var userPlaylists = _spotiyfUserClient.GetUserPlaylistsAsync().Result;
 
             return userPlaylists;
         }
@@ -37,16 +37,15 @@ namespace SpotifyStats.Facades
         {
             var playlistTracks = new List<PlaylistTracksItems>();
 
-            var api = RestClient.For<ISpotiyfUserClient>("https://api.spotify.com");
-            api.Authorization = new AuthenticationHeaderValue("Bearer", _userData.VerifyExistingToken(context));
+            _spotiyfUserClient.Authorization = new AuthenticationHeaderValue("Bearer", _userData.VerifyExistingToken(context));
 
-            var spotifyPlaylistTracksResponse = api.GetPlaylistTracksAsync(playlistId, FIRST_OFFSET_INDEX).Result;
+            var spotifyPlaylistTracksResponse = _spotiyfUserClient.GetPlaylistTracksAsync(playlistId, FIRST_OFFSET_INDEX).Result;
             playlistTracks = AddSongsIntoList(playlistTracks, spotifyPlaylistTracksResponse.Items);
             
             while (spotifyPlaylistTracksResponse.Next != null)
             {
                 Uri url = new Uri(spotifyPlaylistTracksResponse.Next);
-                spotifyPlaylistTracksResponse = api.GetPlaylistTracksAsync(playlistId, HttpUtility.ParseQueryString(url.Query).Get(OFFSET)).Result;
+                spotifyPlaylistTracksResponse = _spotiyfUserClient.GetPlaylistTracksAsync(playlistId, HttpUtility.ParseQueryString(url.Query).Get(OFFSET)).Result;
 
                 playlistTracks = AddSongsIntoList(playlistTracks, spotifyPlaylistTracksResponse.Items);
             }

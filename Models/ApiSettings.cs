@@ -11,5 +11,7 @@ namespace SpotifyStats.Models
         public string BaseSpotifyUrl { get; set; }
 
         public string SpotifyScope { get; set; }
+
+        public SpotifyUrls SpotifyUrls { get; set; }
     }
 }
