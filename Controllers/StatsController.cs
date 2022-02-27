@@ -8,8 +8,8 @@ namespace SpotifyStats.Controllers
     [Route("stats")]
     public class StatsController : ControllerBase
     {
-        private IPlaylist _playlist;
-        private IUserData _userData;
+        private readonly IPlaylist _playlist;
+        private readonly IUserData _userData;
 
         public StatsController(IPlaylist playlist, IUserData userData)
         {

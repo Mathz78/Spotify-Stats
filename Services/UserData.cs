@@ -10,9 +10,11 @@ namespace SpotifyStats.Services
 
         public void CreateTokensCookie(HttpContext context, string accessToken, int expirationTime)
         {
-            CookieOptions cookies = new CookieOptions();
+            CookieOptions cookies = new CookieOptions
+            {
+                Expires = DateTimeOffset.Now.AddSeconds(expirationTime)
+            };
 
-            cookies.Expires = DateTimeOffset.Now.AddSeconds(expirationTime);
             context.Response.Cookies.Append(SPOTIFY_ACCESS_TOKEN_COOKIE_NAME, accessToken, cookies);
         }
 
