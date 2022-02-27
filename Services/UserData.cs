@@ -18,7 +18,16 @@ namespace SpotifyStats.Services
 
         public string VerifyExistingToken(HttpContext context)
         {
-            return context.Request.Cookies[SPOTIFY_ACCESS_TOKEN_COOKIE_NAME].ToString();
+            try
+            {
+                var token = context.Request.Cookies[SPOTIFY_ACCESS_TOKEN_COOKIE_NAME].ToString();
+
+                return token;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

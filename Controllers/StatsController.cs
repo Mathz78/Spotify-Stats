@@ -9,23 +9,35 @@ namespace SpotifyStats.Controllers
     public class StatsController : ControllerBase
     {
         private IPlaylist _playlist;
+        private IUserData _userData;
 
-        public StatsController(IPlaylist playlist)
+        public StatsController(IPlaylist playlist, IUserData userData)
         {
             _playlist = playlist;
+            _userData = userData;
         }
 
         [HttpGet]
         public IActionResult GetAllPlaylists()
         {
-            return Ok(_playlist.GetAllPlaylists(HttpContext));
+            if (_userData.VerifyExistingToken(HttpContext) != null)
+            {
+                return Ok(_playlist.GetAllPlaylists(HttpContext));
+            }
+
+            return Redirect("/");
         }
 
         [HttpGet]
         [Route("playlist/tracks")]
         public IActionResult GetPlaylistTracks([FromQuery(Name = "id")] string playlistId)
         {
-            return Ok(_playlist.GetPlaylistTracks(HttpContext, playlistId));
+            if (_userData.VerifyExistingToken(HttpContext) != null)
+            {
+                return Ok(_playlist.GetPlaylistTracks(HttpContext, playlistId));
+            }
+
+            return Redirect("/");
         }
     }
 }

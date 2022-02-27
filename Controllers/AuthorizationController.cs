@@ -9,11 +9,13 @@ namespace SpotifyStats.Controllers
     [Route("auth")]
     public class AuthorizationController : ControllerBase
     {
-        private IAuthorization _authorization;
+        private readonly IAuthorization _authorization;
+        private readonly IUserData _userData;
 
-        public AuthorizationController(IAuthorization authorization)
+        public AuthorizationController(IAuthorization authorization, IUserData userData)
         {
             _authorization = authorization;
+            _userData = userData;
         }
 
         [HttpGet]
@@ -26,9 +28,10 @@ namespace SpotifyStats.Controllers
 
         [HttpGet]
         [Route("/callback")]
-        public void Callback([FromQuery(Name = "code")] string code, [FromQuery(Name = "state")] string state)
+        public RedirectResult Callback([FromQuery(Name = "code")] string code, [FromQuery(Name = "state")] string state)
         {
             _authorization.Callback(code, state, HttpContext);
+            return Redirect("stats");
         }
     }
 }
