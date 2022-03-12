@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using SpotifyStats.Interfaces;
 
