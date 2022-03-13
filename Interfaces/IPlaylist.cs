@@ -9,5 +9,7 @@ namespace SpotifyStats.Interfaces
         public PlaylistsResponse GetAllPlaylists(HttpContext context);
 
         public List<PlaylistTracksItems> GetPlaylistTracks(HttpContext context, string id);
+
+        public object GetPlaylistStats(HttpContext context, string id);
     }
 }

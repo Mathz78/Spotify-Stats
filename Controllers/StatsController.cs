@@ -38,5 +38,17 @@ namespace SpotifyStats.Controllers
 
             return Redirect("/");
         }
+
+        [HttpGet]
+        [Route("playlist/stats")]
+        public IActionResult GetPlaylistStats([FromQuery(Name = "id")] string playlistId)
+        {
+            if (_userData.VerifyExistingToken(HttpContext) != null)
+            {
+                return Ok(_playlist.GetPlaylistStats(HttpContext, playlistId));
+            }
+
+            return Redirect("/");
+        }
     }
 }
