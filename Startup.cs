@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +10,7 @@ using SpotifyStats.Facades;
 using SpotifyStats.Interfaces;
 using SpotifyStats.Interfaces.RestEase;
 using SpotifyStats.Models;
+using SpotifyStats.Models.DataBase;
 using SpotifyStats.Services;
 
 namespace SpotifyStats
@@ -43,6 +45,9 @@ namespace SpotifyStats
                 .AddSingleton<IAuthorization, Authorization>()
                 .AddSingleton<IUserData, UserData>()
                 .AddSingleton<IPlaylist, Playlist>();
+            
+            services.AddDbContext<SpotifyStatsContext>(opt => opt.UseSqlServer
+                (apiSettings.ConnectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

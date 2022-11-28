@@ -2,6 +2,8 @@ namespace SpotifyStats.Models
 {
     public class ApiSettings
     {
+        public string ConnectionString { get; set; }
+
         public string ClientId { get; set; }
 
         public string ClientSecret { get; set; }
