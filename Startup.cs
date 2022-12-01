@@ -9,6 +9,7 @@ using RestEase;
 using SpotifyStats.Facades;
 using SpotifyStats.Interfaces;
 using SpotifyStats.Interfaces.RestEase;
+using SpotifyStats.Interfaces.Services;
 using SpotifyStats.Models;
 using SpotifyStats.Models.DataBase;
 using SpotifyStats.Services;
@@ -44,7 +45,8 @@ namespace SpotifyStats
                 .AddSingleton(RestClient.For<ISpotiyfUserClient>(apiSettings.SpotifySettings.SpotifyUrls.SpotifyApi))
                 .AddSingleton<IAuthorization, Authorization>()
                 .AddSingleton<IUserData, UserData>()
-                .AddSingleton<IPlaylist, Playlist>();
+                .AddSingleton<IPlaylist, Playlist>()
+                .AddSingleton<IJwtService, JwtService>();
             
             services.AddDbContext<SpotifyStatsContext>(opt => opt.UseSqlServer
                 (Configuration.GetConnectionString("SpotifyConnectionString")));
