@@ -36,11 +36,11 @@ namespace SpotifyStats.Facades
             _apiSettings = apiSettings;
             _spotifyClient = spotifyClient;
             
-            _clientSecretValue = _apiSettings.ClientSecret;
-            _clientIdValue = _apiSettings.ClientId;
-            _redirectUriValue = _apiSettings.RedirectUri;
-            _baseUrl = _apiSettings.BaseSpotifyUrl;
-            _scope = _apiSettings.SpotifyScope;
+            _clientSecretValue = _apiSettings.SpotifySettings.ClientSecret;
+            _clientIdValue = _apiSettings.SpotifySettings.ClientId;
+            _redirectUriValue = _apiSettings.SpotifySettings.RedirectUri;
+            _baseUrl = _apiSettings.SpotifySettings.BaseSpotifyUrl;
+            _scope = _apiSettings.SpotifySettings.SpotifyScope;
 
             _userData = userData;
         }

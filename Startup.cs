@@ -38,16 +38,16 @@ namespace SpotifyStats
             });
         
             var apiSettings = Configuration.GetSection("ApiSettings").Get<ApiSettings>();
-
+            
             services.AddSingleton(apiSettings)
-                .AddSingleton(RestClient.For<ISpotifyClient>(apiSettings.SpotifyUrls.SpotifyAccounts))
-                .AddSingleton(RestClient.For<ISpotiyfUserClient>(apiSettings.SpotifyUrls.SpotifyApi))
+                .AddSingleton(RestClient.For<ISpotifyClient>(apiSettings.SpotifySettings.SpotifyUrls.SpotifyAccounts))
+                .AddSingleton(RestClient.For<ISpotiyfUserClient>(apiSettings.SpotifySettings.SpotifyUrls.SpotifyApi))
                 .AddSingleton<IAuthorization, Authorization>()
                 .AddSingleton<IUserData, UserData>()
                 .AddSingleton<IPlaylist, Playlist>();
             
             services.AddDbContext<SpotifyStatsContext>(opt => opt.UseSqlServer
-                (apiSettings.ConnectionString));
+                (Configuration.GetConnectionString("SpotifyConnectionString")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
