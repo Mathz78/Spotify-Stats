@@ -56,21 +56,17 @@ namespace SpotifyStats.Facades
         public object GetPlaylistStats(HttpContext context, string playlistId)
         {
             var tracks = GetPlaylistTracks(context, playlistId);
-
-            var years = new Dictionary<string, int>()
-            {
-                { "2015", 0},
-                { "2016", 0},
-                { "2017", 0},
-                { "2018", 0},
-                { "2019", 0},
-                { "2020", 0},
-                { "2021", 0},
-                { "2022", 0}
-            };
+            var years = new Dictionary<string, int>();
 
             foreach (var track in tracks)
             {
+                var songAddedYear = track.AddedAt.Year.ToString();
+
+                if (!years.ContainsKey(songAddedYear)) 
+                {
+                    years.Add(songAddedYear, default(int));
+                }
+                
                 years[track.AddedAt.Year.ToString()] += 1;
             }
             
