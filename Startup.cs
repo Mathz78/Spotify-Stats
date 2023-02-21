@@ -18,9 +18,13 @@ namespace SpotifyStats
 {
     public class Startup
     {
+        private readonly ApiSettings _apiSettings;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
+            _apiSettings = Configuration.GetSection("ApiSettings").Get<ApiSettings>();
         }
 
         public IConfiguration Configuration { get; }
@@ -28,6 +32,8 @@ namespace SpotifyStats
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddControllers();
 
             services.AddSwaggerGen(c => {
@@ -37,12 +43,10 @@ namespace SpotifyStats
                     Version = "v1"
                 });
             });
-        
-            var apiSettings = Configuration.GetSection("ApiSettings").Get<ApiSettings>();
             
-            services.AddSingleton(apiSettings)
-                .AddSingleton(RestClient.For<ISpotifyClient>(apiSettings.SpotifySettings.SpotifyUrls.SpotifyAccounts))
-                .AddSingleton(RestClient.For<ISpotiyfUserClient>(apiSettings.SpotifySettings.SpotifyUrls.SpotifyApi))
+            services.AddSingleton(_apiSettings)
+                .AddSingleton(RestClient.For<ISpotifyClient>(_apiSettings.SpotifySettings.SpotifyUrls.SpotifyAccounts))
+                .AddSingleton(RestClient.For<ISpotiyfUserClient>(_apiSettings.SpotifySettings.SpotifyUrls.SpotifyApi))
                 .AddSingleton<IAuthorization, Authorization>()
                 .AddSingleton<IUserData, UserData>()
                 .AddSingleton<IPlaylist, Playlist>()
@@ -55,6 +59,8 @@ namespace SpotifyStats
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(x => x.WithOrigins(_apiSettings.AllowedOrigins));
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
